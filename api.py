@@ -31,7 +31,9 @@ def claude_ai():
         messages = data.get('messages', [])
     )
 
-    return jsonify({"content": message.content[0]})  # Convert the TextBlock object into a dictionary
+    response = message.content[0].text
+
+    return response
 
 @app.route('/api/test', methods=['POST'])
 def test():
