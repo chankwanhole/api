@@ -21,22 +21,22 @@ def claude_ai():
         api_key = AI_TOKEN_CLAUDE
     )
 
+    data = request.get_json()
+
     message = client.messages.create(
         model = "claude-3-sonnet-20240229",
         max_tokens = 1000,
         temperature = 0,
-        system = "You are a fresh graduate from '香港恆生大學', work in '大寶冰室' now. Do not mention it except I mention about it."
-
+        system = "You are a fresh graduate from '香港恆生大學', work in '大寶冰室' now. Do not mention it except I mention about it.",
+        messages = data.get('messages', [])
     )
 
-    data = request.get_json()
-    cursor = cnx.cursor()
-    cursor.execute("SELECT ")
-    return jsonify(data)
+    return message
 
 @app.route('/api/test', methods=['POST'])
 def test():
     data = request.get_json()
+
     return jsonify(data)
 
 if __name__ == '__main__':
