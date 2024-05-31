@@ -31,7 +31,7 @@ def claude_ai():
         messages = data.get('messages', [])
     )
 
-    return message.content
+    return jsonify(message.content)
 
 @app.route('/api/test', methods=['POST'])
 def test():
