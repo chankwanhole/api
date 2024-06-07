@@ -45,6 +45,12 @@ def claude_ai():
 
     if 'conversationId' in data and data.get('conversationId', -1) != -1:
         conversation_id = data.get('conversationId', -1)
+
+        cursor = cnx.cursor()
+        query = ("UPDATE claude_ai_conversation SET content = %s, time_stamp = NOW() WHERE conversation_id = %s")
+        cursor.execute(query, (str(all_messages), conversation_id))
+        cnx.commit()
+        cursor.close()
     elif 'conversationId' not in data or conversation_id == -1:
         content = str(all_messages)
 
