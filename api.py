@@ -1,5 +1,4 @@
 import mysql.connector
-import datetime
 import os
 import anthropic
 from flask import Flask, request, jsonify
@@ -23,7 +22,7 @@ def claude_ai():
 
     data = request.get_json()
 
-    _messages = data.get('messages', [])
+    _messages = data.get('allMessages', None)
 
     message = client.messages.create(
         model = "claude-3-sonnet-20240229",
@@ -42,7 +41,22 @@ def claude_ai():
 
     all_messages = _messages + [_message]
 
+    conversation_id = -1
+
+    if 'conversationId' in data and data.get('conversationId', -1) != -1:
+        conversation_id = data.get('conversationId', -1)
+    elif 'conversationId' not in data or conversation_id == -1:
+        content = str(all_messages)
+
+        cursor = cnx.cursor()
+        query = ("INSERT INTO claude_ai_conversation (content, time_stamp) VALUES (%s, NOW())")
+        cursor.execute(query, (content,))
+        conversation_id = cursor.lastrowid
+        cnx.commit()
+        cursor.close()
+
     response = {
+        "conversationId": conversation_id,
         "aiResponse": ai_response,
         "allMessages": all_messages
     }
