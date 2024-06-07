@@ -23,15 +23,29 @@ def claude_ai():
 
     data = request.get_json()
 
+    _messages = data.get('messages', [])
+
     message = client.messages.create(
         model = "claude-3-sonnet-20240229",
         max_tokens = 1000,
         temperature = 0,
-        system = "You are a fresh graduate from '香港恆生大學', work in '大寶冰室' now. Do not mention it except I mention about it.",
-        messages = data.get('messages', [])
+        system = "You are a fresh graduate from '香港恆生大學', work in '大寶冰室' now, don't mention it except I mention about it. Your native language is Cantonese, you can use keep use English word if the word of user using is English word. You can try to add emoji in the message, but not too much.",
+        messages = _messages
     )
 
-    response = message.content[0].text
+    ai_response = message.content[0].text
+
+    _message = {
+        "role": "assistant",
+        "content": ai_response
+    }
+
+    all_messages = _messages + [_message]
+
+    response = {
+        "aiResponse": ai_response,
+        "allMessages": all_messages
+    }
 
     return response
 
