@@ -104,6 +104,92 @@ def api_mathjax_insert():
 
     return response
 
+@app.route('/api/mathjax/index', methods=['GET'])
+def api_mathjax_index():
+    cursor = cnx.cursor()
+    query = ("SELECT * FROM mathjax ORDER BY sequence ASC")
+    cursor.execute(query)
+
+    response = []
+
+    for (mathjax_id, tab_name, content, sequence) in cursor:
+        response.append({
+            "id": mathjax_id,
+            "tabName": tab_name,
+            "content": content,
+            "sequence": sequence
+        })
+
+    cursor.close()
+
+    return jsonify(response)
+
+@app.route('/api/mathjax/delete', methods=['POST'])
+def api_mathjax_delete():
+    data = request.get_json()
+
+    mathjax_id = data.get('id', None)
+
+    response = {}
+
+    if mathjax_id is not None:
+        cursor = cnx.cursor()
+        query = ("DELETE FROM mathjax WHERE id = %s")
+        cursor.execute(query, (mathjax_id,))
+
+        try:
+            cnx.commit()
+            response = {
+                "error": 0
+            }
+        except Exception as e:
+            response = {
+                "error": -2,
+                "message": str(e)
+            }
+        finally:
+            cursor.close()
+    else:
+        response = {
+            "error": -1
+        }
+
+    return response
+
+@app.route('api/mathjax/update', methods=['POST'])
+def api_mathjax_update():
+    data = request.get_json()
+
+    mathjax_id = data.get('id', None)
+    tab_name = data.get('tabName', None)
+    content = data.get('content', None)
+    sequence = data.get('sequence', None)
+
+    response = {}
+
+    if mathjax_id is not None and tab_name is not None and content is not None and sequence is not None:
+        cursor = cnx.cursor()
+        query = ("UPDATE mathjax SET tab_name = %s, content = %s, sequence = %s WHERE id = %s")
+        cursor.execute(query, (tab_name, content, sequence, mathjax_id))
+
+        try:
+            cnx.commit()
+            response = {
+                "error": 0
+            }
+        except Exception as e:
+            response = {
+                "error": -2,
+                "message": str(e)
+            }
+        finally:
+            cursor.close()
+    else:
+        response = {
+            "error": -1
+        }
+
+    return response
 
 @app.route('/mathjax/insert', methods=['GET', 'POST'])
 def mathjax_insert():
