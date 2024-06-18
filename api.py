@@ -156,7 +156,7 @@ def api_mathjax_delete():
 
     return response
 
-@app.route('api/mathjax/update', methods=['POST'])
+@app.route('/api/mathjax/update', methods=['POST'])
 def api_mathjax_update():
     data = request.get_json()
 
