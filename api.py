@@ -75,7 +75,7 @@ def test():
 
     return jsonify(data)
 
-@app.route('/mathjax/insert')
+@app.route('/mathjax/insert', methods=['GET', 'POST'])
 def mathjax_insert():
     return render_template('mathjax_insert.html')
 
