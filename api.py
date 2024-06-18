@@ -1,7 +1,7 @@
 import mysql.connector
 import os
 import anthropic
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import sys
 home_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, home_path)
@@ -74,6 +74,10 @@ def test():
     data = request.get_json()
 
     return jsonify(data)
+
+@app.route('/mathjax/insert')
+def mathjax_insert():
+    return render_template('mathjax.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
