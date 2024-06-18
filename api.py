@@ -120,6 +120,7 @@ def api_mathjax_index():
             "sequence": sequence
         })
 
+    cnx.commit()
     cursor.close()
 
     return jsonify(response)
