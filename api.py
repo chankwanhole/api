@@ -77,7 +77,7 @@ def test():
 
 @app.route('/mathjax/insert')
 def mathjax_insert():
-    return render_template('mathjax.html')
+    return render_template('mathjax_insert.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
