@@ -2,6 +2,7 @@ import mysql.connector
 import os
 import anthropic
 from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 import sys
 home_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, home_path)
@@ -11,6 +12,7 @@ cf = config.config()
 cnx = mysql.connector.connect(user=cf.DATABASE_USER, password=cf.DATABASE_PASSWORD, host=cf.DATABASE_HOST, database='database')
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/api/claude-ai', methods=['POST'])
 def claude_ai():
