@@ -69,11 +69,39 @@ def claude_ai():
 
     return response
 
-@app.route('/api/test', methods=['POST'])
-def test():
+@app.route('/api/mathjax/insert', methods=['POST'])
+def api_mathjax_insert():
     data = request.get_json()
 
-    return jsonify(data)
+    tab_name = data.get('tabName', None)
+    content = data.get('content', None)
+    sequence = data.get('sequence', None)
+
+    response = {}
+
+    if tab_name is not None and content is not None and sequence is not None:
+        cursor = cnx.cursor()
+        query = ("INSERT INTO mathjax (tab_name, content, sequence) VALUES (%s, %s, %s)")
+        cursor.execute(query, (tab_name, content, sequence))
+        try:
+            cnx.commit()
+            response = {
+                "error": 0
+            }
+        except Exception as e:
+            response = {
+                "error": -2,
+                "message": str(e)
+            }
+        finally:
+            cursor.close()
+    else:
+        response = {
+            "error": -1
+        }
+
+    return response
+
 
 @app.route('/mathjax/insert', methods=['GET', 'POST'])
 def mathjax_insert():
