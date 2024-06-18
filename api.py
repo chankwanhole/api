@@ -134,7 +134,7 @@ def api_mathjax_delete():
 
     if mathjax_id is not None:
         cursor = cnx.cursor()
-        query = ("DELETE FROM mathjax WHERE id = %s")
+        query = ("DELETE FROM mathjax WHERE mathjax_id = %s")
         cursor.execute(query, (mathjax_id,))
 
         try:
@@ -169,7 +169,7 @@ def api_mathjax_update():
 
     if mathjax_id is not None and tab_name is not None and content is not None and sequence is not None:
         cursor = cnx.cursor()
-        query = ("UPDATE mathjax SET tab_name = %s, content = %s, sequence = %s WHERE id = %s")
+        query = ("UPDATE mathjax SET tab_name = %s, content = %s, sequence = %s WHERE mathjax_id = %s")
         cursor.execute(query, (tab_name, content, sequence, mathjax_id))
 
         try:
