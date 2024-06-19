@@ -196,5 +196,9 @@ def api_mathjax_update():
 def mathjax_insert():
     return render_template('mathjax_insert.html')
 
+@app.route('/mathjax', methods=['GET'])
+def mathjax():
+    return render_template('mathjax_index.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
