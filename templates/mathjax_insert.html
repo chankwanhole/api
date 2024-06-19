@@ -20,7 +20,7 @@
         <input type="number" id="tab-sequence" class="tab-sequence" placeholder="Tab Sequence" min="0">
 
         <textarea id="latex-editor"></textarea>
-        
+
         <button id="submit-button">Submit</button>
     </div>
     <div class="preview-container">
@@ -81,7 +81,7 @@
             .then(data => {
                 if (data.error == 0) {
                     alert('Content submitted successfully!');
-                    window.location.reload();
+                    window.location.href = 'http://13.215.200.120:5000/api/mathjax';
                 } else {
                     alert('Error submitting content! Please try again.')
                     window.location.reload();
