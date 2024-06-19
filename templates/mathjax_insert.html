@@ -13,9 +13,14 @@
 </head>
 <body>
     <div class="editor-container">
+        <label for="tab-name">Tab Name: </label>
         <input type="text" id="tab-name" class="tab-name" placeholder="Tab Name" maxlength="45">
+
+        <label for="tab-sequence">Tab Sequence: </label>
         <input type="number" id="tab-sequence" class="tab-sequence" placeholder="Tab Sequence" min="0">
+
         <textarea id="latex-editor"></textarea>
+        
         <button id="submit-button">Submit</button>
     </div>
     <div class="preview-container">
