@@ -3,90 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathJax Tabs</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .tab-container {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .chip {
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: #f1f1f1;
-            border: 1px solid #ccc;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .chip.active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-        .content-container {
-            display: none;
-        }
-        .content-container.active {
-            display: block;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const apiUrl = "http://13.215.200.120:5000/api/mathjax/index";
-
-            axios.get(apiUrl)
-                .then(response => {
-                    const tabs = response.data;
-                    const tabContainer = document.getElementById("tab-container");
-                    const contentContainer = document.getElementById("content-container");
-                    console.log(tabs);
-
-                    tabs.forEach((tab, index) => {
-                        // Create tab chip
-                        const chip = document.createElement("div");
-                        chip.className = "chip" + (index === 0 ? " active" : "");
-                        chip.textContent = tab.tabName;
-                        chip.dataset.index = index;
-                        chip.addEventListener("click", function() {
-                            document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-                            document.querySelectorAll(".content-container").forEach(c => c.classList.remove("active"));
-                            chip.classList.add("active");
-                            document.getElementById("content-" + index).classList.add("active");
-                            if (window.MathJax) {
-                                window.MathJax.typeset();
-                            }
-                        });
-                        tabContainer.appendChild(chip);
-
-                        // Create content container
-                        const content = document.createElement("div");
-                        content.className = "content-container" + (index === 0 ? " active" : "");
-                        content.id = "content-" + index;
-                        content.innerHTML = tab.content;
-                        contentContainer.appendChild(content);
-                    });
-
-                    // Re-render MathJax for the initial content
-                    if (window.MathJax) {
-                        window.MathJax.typeset();
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching data from API:", error);
-                });
-        });
-    </script>
+    <title>MathJax</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/stex/stex.min.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
 </head>
 <body>
-    <div id="tab-container" class="tab-container"></div>
-    <div id="content-container"></div>
+    <div class="editor-container">
+        <div id="chip-container"></div>
+
+        <button id="insert-button">Insert New Tab</button> </br></br>
+
+        <label for="tab-name">Tab Name: </label>
+        <input type="text" id="tab-name" class="tab-name" placeholder="Tab Name" maxlength="45">
+
+        <label for="tab-sequence">Tab Sequence: </label>
+        <input type="number" id="tab-sequence" class="tab-sequence" placeholder="Tab Sequence" min="0">
+
+        <textarea id="latex-editor"></textarea>
+
+        <button id="submit-button">Update</button>
+        <button id="delete-button" style="background-color: red;">Delete</button>
+    </div>
+    <div class="preview-container">
+        <div id="latex-preview"></div>
+    </div>
+    <script>
+        document.getElementById('submit-button').addEventListener('click', function() {
+            handleSubmission();
+        });
+
+        document.getElementById('delete-button').addEventListener('click', function() {
+            deleteTab();
+        });
+
+        document.getElementById('insert-button').addEventListener('click', function() {
+            window.location.href = 'http://13.215.200.120:5000/mathjax/insert';
+        });
+
+        const editor = CodeMirror.fromTextArea(document.getElementById('latex-editor'), {
+            lineNumbers: true,
+            mode: 'stex',
+            lineWrapping: true,
+            viewportMargin: Infinity
+        });
+
+        for (let i = 0; i < 10; i++) {
+            editor.replaceRange('\n', CodeMirror.Pos(editor.lastLine()));
+        }
+
+        function updatePreview() {
+            const preview = document.getElementById('latex-preview');
+            preview.innerHTML = editor.getValue();
+            MathJax.typesetPromise([preview]).catch((err) => console.log(err.message));
+        }
+
+        function handleSubmission() {
+            const tabName = document.getElementById('tab-name').value;
+            const tabSequence = document.getElementById('tab-sequence').value;
+
+            if (!tabName || tabName.trim() === '') {
+                alert('Please enter a tab name');
+                return;
+            }
+            const latexContent = editor.getValue();
+            console.log(tabName, tabSequence, latexContent)
+            const tabContent = document.createElement('div');
+            tabContent.classList.add('latex-content');
+            tabContent.textContent = latexContent;
+            let parentElement = document.getElementById(tabName);
+            if (parentElement) {
+                document.getElementById(tabName).appendChild(tabContent);
+            }
+
+            fetch('http://13.215.200.120:5000/api/mathjax/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: selectedTabId,
+                    tabName: tabName,
+                    content: latexContent,
+                    sequence: tabSequence
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error == 0) {
+                    alert('Content updated successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error updating content! Please try again.')
+                    window.location.reload();
+                }
+            })
+            .catch((error) => {
+                alert('Error updating content! Please try again.')
+            });
+        }
+
+        function deleteTab() {
+            fetch('http://13.215.200.120:5000/api/mathjax/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: selectedTabId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error == 0) {
+                    alert('Delete tab successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error deleting tab! Please try again.')
+                    window.location.reload();
+                }
+            })
+            .catch((error) => {
+                alert('Error deleting tab! Please try again.')
+            });
+        }
+
+        let selectedTabId;
+
+        fetch('http://13.215.200.120:5000/api/mathjax/index')
+            .then(response => response.json())
+            .then(data => {
+                const tabs = data;
+
+                function generateChips() {
+                    const chipContainer = document.getElementById('chip-container');
+                    tabs.forEach(tab => {
+                        const chip = document.createElement('div');
+                        chip.textContent = tab.tabName;
+                        chip.classList.add('chip');
+                        chip.addEventListener('click', () => {
+                            editor.setValue(tab.content);
+                            document.getElementById('tab-name').value = tab.tabName;
+                            document.getElementById('tab-sequence').value = tab.sequence;
+
+                            document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+
+                            chip.classList.add('selected');
+
+                            selectedTabId = tab.id;
+                            console.log(selectedTabId)
+                        });
+                        chipContainer.appendChild(chip);
+                    });
+                }
+
+                generateChips();
+
+                if (tabs.length > 0) {
+                    document.querySelectorAll('.chip')[0].click();
+                }
+            });
+
+        editor.on('change', updatePreview);
+
+        updatePreview();
+    </script>
 </body>
 </html>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: space-around;
+        padding: 20px;
+    }
+    .editor-container, .preview-container {
+        width: 45%;
+    }
+    .tab-name, .tab-sequence {
+        width: 100%;
+        height: 30px;
+    }
+    .CodeMirror {
+        border: 1px solid #000;
+        height: auto;
+        padding: 2px;
+    }
+    .chip {
+        display: inline-block;
+        padding: 10px;
+        border: 1px solid #000;
+        margin: 5px;
+        cursor: pointer;
+        height: 40px; /* Set a fixed height */
+        line-height: 40px; /* Align the text vertically in the middle */
+        overflow: hidden; /* Hide the overflow */
+    }
+    .chip.selected {
+        background-color: #ddd;
+    }
+    #tab-name, #tab-sequence {
+        margin-bottom: 10px;
+    }
+    #submit-button, #delete-button, #insert-button {
+        margin-top: 10px;
+        padding: 5px 10px;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    #submit-button {
+        background-color: #4CAF50;
+    }
+    #delete-button {
+        background-color: #e74c3c;
+    }
+    #insert-button {
+        background-color: #3498db;
+    }
+    #submit-button:hover {
+        background-color: #45a049;
+    }
+    #delete-button:hover {
+        background-color: #e74c3c;
+    }
+    #insert-button:hover {
+        background-color: #2980b9;
+    }
+</style>

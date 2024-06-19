@@ -74,11 +74,17 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
-                alert('Content submitted successfully!');
+                if (data.error == 0) {
+                    alert('Content submitted successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error submitting content! Please try again.')
+                    window.location.reload();
+                }
             })
             .catch((error) => {
                 alert('Error submitting content! Please try again.')
+                window.location.reload();
             });
         }
 
@@ -103,10 +109,10 @@
         height: 30px;
     }
     .CodeMirror {
-    border: 1px solid #000;
-    height: auto;
-    padding: 2px;
-}
+        border: 1px solid #000;
+        height: auto;
+        padding: 2px;
+    }
     #tab-name, #tab-sequence {
         margin-bottom: 10px;
     }
