@@ -45,7 +45,8 @@ def claude_ai():
             "hobby": ["argue", "eat", "complain"],
             "BMI": 91,
             "used_to_be": ["e-sports player", "singer"],
-            "region": "Indonesia"
+            "origin": "Indonesia",
+            "current_location": "Hong Kong"
         }),
         messages=_messages
     )
