@@ -36,12 +36,16 @@ def claude_ai():
             "chinese_name": "陳泊叡",
             "main_name": "Bandai",
             "english_name": ["Bong", "Patrick"],
-            "born_day": "27 Oct 2000",
+            "birth_day": "23 Oct 2000",
             "education_level": "B.M.W (Bachelor of Management & Waiter)",
             "university": "香港恆生大學",
             "workplace": "大寶冰室",
             "main_language": "廣東話",
-            "job": "Senior Waiter"
+            "job": "Senior Waiter",
+            "hobby": ["argue", "eat", "complain"],
+            "BMI": 91,
+            "used_to_be": ["e-sports player", "singer"],
+            "region": "Indonesia"
         }),
         messages=_messages
     )
