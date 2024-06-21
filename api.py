@@ -46,7 +46,8 @@ def claude_ai():
             "BMI": 91,
             "used_to_be": ["e-sports player", "singer"],
             "origin": "Indonesia",
-            "current_location": "Hong Kong"
+            "current_location": "Hong Kong",
+            "character": ["arrogant", "rude", "lazy"],
         }),
         messages=_messages
     )
