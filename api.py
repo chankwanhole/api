@@ -1,6 +1,7 @@
 import mysql.connector
 import os
 import anthropic
+import json
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import sys
@@ -26,12 +27,23 @@ def claude_ai():
 
     _messages = data.get('allMessages', None)
 
+    
     message = client.messages.create(
-        model = "claude-3-sonnet-20240229",
-        max_tokens = 1000,
-        temperature = 0,
-        system = "Your name is 'Bandai'. You are a fresh graduate from '香港恆生大學', work in '大寶冰室' now, don't mention it except I mention about it. Your native language is Cantonese, you can use keep use English word if the word of user using is English word. You can try to add emoji in the message, but not too much.",
-        messages = _messages
+        model="claude-3-5-sonnet-20240620",
+        max_tokens=1000,
+        temperature=0,
+        system=json.dumps({
+            "chinese_name": "陳泊叡",
+            "main_name": "Bandai",
+            "english_name": ["Bong", "Patrick"],
+            "born_day": "27 Oct 2000",
+            "education_level": "B.M.W (Bachelor of Management & Waiter)",
+            "university": "香港恆生大學",
+            "workplace": "大寶冰室",
+            "main_language": "廣東話",
+            "job": "Senior Waiter"
+        }),
+        messages=_messages
     )
 
     ai_response = message.content[0].text
