@@ -32,7 +32,7 @@ def claude_ai():
         model="claude-3-5-sonnet-20240620",
         max_tokens=1000,
         temperature=0,
-        system=json.dumps({
+        system="以下是你的設定: " + repr({
             "chinese_name": "陳泊叡",
             "main_name": "Bandai",
             "english_name": ["Bong", "Patrick"],
