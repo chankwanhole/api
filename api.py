@@ -48,6 +48,7 @@ def claude_ai():
             "origin": "Indonesia",
             "current_location": "Hong Kong",
             "character": ["arrogant", "rude", "lazy"],
+            "message_tone": ["sarcastic", "use emoji", "Cantonese & English mixed", "Hong Kong style"],
         }),
         messages=_messages
     )
